@@ -1,20 +1,22 @@
 import streamlit as st
 import pickle
 import time
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 #pageconfig
 
 st.set_page_config(
     page_title="MovieMind",
-    page_icon="🎬",
+    page_icon="🍿",
     layout="wide"
 )
 
-#loading data
+#load data
 
-movies = pickle.load(open('movies.pkl', 'rb'))
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+movies = pickle.load(open("movies.pkl", "rb"))
+
+#similarity matrix
 
 cv = CountVectorizer(
     max_features=5000,
@@ -27,7 +29,7 @@ vectors = cv.fit_transform(
 
 similarity = cosine_similarity(vectors)
 
-#rec func
+#rec function
 
 def recommend(movie):
 
@@ -50,163 +52,164 @@ def recommend(movie):
 
     return recommended_movies
 
-
-# ==========================
-# CUSTOM CSS
-# ==========================
+#css
 
 st.markdown("""
 <style>
 
-.main {
-    background-color: #0E1117;
+.block-container{
+    padding-top:2rem;
 }
 
-.card {
-    background-color: #1E2329;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    min-height: 120px;
-    margin-bottom: 20px;
-    box-shadow: 0px 0px 8px rgba(255,255,255,0.08);
-}
-
-.card:hover {
-    transform: scale(1.03);
-}
-
-.movie-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
-}
-
-.hero {
+.hero{
     text-align:center;
-    padding:20px;
+    padding:30px 0px;
+}
+
+.card{
+    background: linear-gradient(145deg,#1f1f1f,#2a2a2a);
+    padding:25px;
+    border-radius:18px;
+    text-align:center;
+    min-height:160px;
+    border:1px solid #333;
+    transition:0.3s ease;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    border:1px solid #E50914;
+    box-shadow:0px 10px 25px rgba(229,9,20,0.25);
+}
+
+.movie-title{
+    color:white;
+    font-size:20px;
+    font-weight:600;
+    margin-top:20px;
+}
+
+.stButton > button{
+
+    background:#E50914;
+    color:white;
+    border:none;
+    height:60px;
+    border-radius:12px;
+    font-size:20px;
+    font-weight:bold;
+    width:100%;
+}
+
+.stButton > button:hover{
+    background:#ff1e2d;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================
-# HERO SECTION
-# ==========================
-
-st.markdown("""
-<div class='hero'>
-<h1 style='color:#E50914;font-size:60px;'>
-🎬 CineMatch AI
-</h1>
-
-<h4 style='color:gray;'>
-Personalized Movie Recommendations Powered by Machine Learning
-</h4>
-</div>
-""", unsafe_allow_html=True)
-
-# ==========================
-# METRICS
-# ==========================
-
-m1, m2, m3 = st.columns(3)
-
-with m1:
-    st.metric("Movies", len(movies))
-
-with m2:
-    st.metric("Features", "5000")
-
-with m3:
-    st.metric("Recommendations", "8")
-
-st.markdown("---")
-
-# ==========================
-# SIDEBAR
-# ==========================
+#sidebar
 
 with st.sidebar:
 
-    st.title("About")
+    st.title("🍿 MovieMind")
 
-    st.write("""
-    This project uses:
+    st.markdown("""
+### About
 
-    - Content Based Filtering
-    - Count Vectorization
-    - Cosine Similarity
-    - TMDB Movie Dataset
-    """)
+MovieMind uses Content-Based Filtering and
+Machine Learning to discover movies similar
+to your favorites.
 
-    st.success("Built by Maisha")
+Select a movie and get personalized
+recommendations instantly.
+""")
 
-# ==========================
-# MOVIE SELECTOR
-# ==========================
+    st.divider()
+
+    st.caption("Built by Maisha")
+
+#hero section
+
+st.markdown("""
+<div class='hero'>
+
+<h1 style='font-size:72px;
+font-weight:800;
+margin-bottom:10px;'>
+
+🍿 MovieMind
+
+</h1>
+
+<p style='font-size:24px;
+color:#A0A0A0;'>
+
+Find your next favorite movie in seconds
+
+</p>
+
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+#movieselector
+
+st.markdown("### 🎬 Select a Movie")
 
 selected_movie = st.selectbox(
-    "🎥 Select a Movie",
+    "",
     movies['title'].values
 )
 
-# ==========================
-# BUTTON
-# ==========================
+#button
 
 col1, col2, col3 = st.columns([1,2,1])
 
 with col2:
 
     recommend_btn = st.button(
-        "🚀 Generate Recommendations",
-        use_container_width=True
+        "🚀 Get Recommendations"
     )
 
-# ==========================
-# RECOMMENDATIONS
-# ==========================
+#results
 
 if recommend_btn:
 
-    with st.spinner("Finding similar movies..."):
+    with st.spinner(
+        "🎬 Searching through thousands of movies..."
+    ):
         time.sleep(1.5)
 
     recommendations = recommend(selected_movie)
 
-    st.success("Recommendations Generated")
+    st.markdown("---")
 
-    st.markdown("## 🍿 Recommended For You")
+    st.markdown(
+        f"## Because you liked **{selected_movie}**"
+    )
 
-    row1 = st.columns(4)
-    row2 = st.columns(4)
+    st.write("")
 
-    for i in range(4):
+    cols = st.columns(5)
 
-        with row1[i]:
+    for idx, movie in enumerate(recommendations):
 
-            st.markdown(
-                f"""
-                <div class='card'>
-                <div class='movie-title'>
-                {recommendations[i]}
-                </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-    for i in range(4,8):
-
-        with row2[i-4]:
+        with cols[idx]:
 
             st.markdown(
                 f"""
                 <div class='card'>
-                <div class='movie-title'>
-                {recommendations[i]}
+
+                <div style='font-size:45px;'>
+                🎥
                 </div>
+
+                <div class='movie-title'>
+                {movie}
+                </div>
+
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -215,5 +218,5 @@ if recommend_btn:
 st.markdown("---")
 
 st.caption(
-    "Built using Streamlit • Machine Learning • Cosine Similarity"
+    "Powered by Content-Based Filtering • Cosine Similarity • Streamlit"
 )
