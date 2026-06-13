@@ -140,7 +140,7 @@ with st.sidebar:
     - TMDB Movie Dataset
     """)
 
-    st.success("Built by Mitesh")
+    st.success("Built by Maisha")
 
 # ==========================
 # MOVIE SELECTOR
