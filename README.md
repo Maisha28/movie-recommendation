@@ -12,3 +12,6 @@ Features:
 - Count Vectorization
 - Cosine Similarity
 - Interactive UI
+
+## Live Demo
+https://movie-recommendation-bzmmb9ndgdluagj8p84ndr.streamlit.app
