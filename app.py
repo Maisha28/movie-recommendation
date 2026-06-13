@@ -2,9 +2,7 @@ import streamlit as st
 import pickle
 import time
 
-# ==========================
-# PAGE CONFIG
-# ==========================
+#pageconfig
 
 st.set_page_config(
     page_title="MovieMind",
@@ -12,16 +10,24 @@ st.set_page_config(
     layout="wide"
 )
 
-# ==========================
-# LOAD DATA
-# ==========================
+#loading data
 
 movies = pickle.load(open('movies.pkl', 'rb'))
-similarity = pickle.load(open('similarity.pkl', 'rb'))
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-# ==========================
-# RECOMMEND FUNCTION
-# ==========================
+cv = CountVectorizer(
+    max_features=5000,
+    stop_words='english'
+)
+
+vectors = cv.fit_transform(
+    movies['tags']
+).toarray()
+
+similarity = cosine_similarity(vectors)
+
+#rec func
 
 def recommend(movie):
 
