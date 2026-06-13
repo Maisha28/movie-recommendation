@@ -41,7 +41,7 @@ def recommend(movie):
         list(enumerate(distances)),
         reverse=True,
         key=lambda x: x[1]
-    )[1:9]
+    )[1:6]
 
     recommended_movies = []
 
